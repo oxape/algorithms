@@ -15,7 +15,7 @@ def find_lowest_cost_node(costs: dict, processed: set) -> str:
     q = set(costs.keys())
     for e in processed:
         q.remove(e)
-    
+
     for node in q:
         cost = costs[node]
         # 如果当前节点的开销更低且未处理过
@@ -45,6 +45,10 @@ def find_lowest_path(graph: dict, start: str, end):
         # 这个while循环在所有节点都被处理过后结束
         if node is None:
             break
+        # 如果只在start和end之间查找一条最短路径的话，可以提前返回，因为如果node被加入到processed就代表已经确定了它的最短路径
+        if node == end:
+            break
+        processed.add(node)
         cost = costs[node]
         neighbors = graph[node]
         # 遍历邻居节点
@@ -54,7 +58,6 @@ def find_lowest_path(graph: dict, start: str, end):
             if n not in costs or costs[n] > new_cost:
                 costs[n] = new_cost
                 parents[n] = node
-        processed.add(node)
     print(costs)
     parent = end
     path = [end]
