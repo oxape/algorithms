@@ -80,7 +80,7 @@ def bfs_path_search(graph: dict, start: str, end: str):
         min_weight = float('inf')
         min_node = None
         # 遍历所有权重节点找到距离起点最短的节点（不一定是直接距离，有可能是间接距离，当然也不是边数）
-        # 这里可以优化减少遍历次数，例如加个index，只遍历index之后的，待尝试
+        # 这里可以优化减少遍历次数，例如加个index，只遍历index之后的，待尝试（不用尝试index，因为有可能前面已经检查的index比较大后面的比较小，可以考虑加个单独遍历使用的数组把已经处理的从数组中删除）
         for k, v in weights.items():
             if v <= min_weight:
                 # 如果已经搜索过相应节点的邻居节点就忽略，感觉可以添加index优化减少遍历次数
@@ -90,7 +90,7 @@ def bfs_path_search(graph: dict, start: str, end: str):
                 else:
                     min_weight = v
                     min_node = k
-        # 感觉下面这个if内的print不会执行，但是没有论证过
+        # 感觉下面这个if内的print不会执行，和while条件作用应该是相同的
         if min_node is None:
             # print('min node is None')
             break
