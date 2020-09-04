@@ -13,8 +13,7 @@ def find_lowest_cost_node(costs: dict, processed: set) -> str:
     '''
     # 优化循环 这个优化其实应该在这个函数外面做，这样就不用反复创建q了，这里只做演示用途，正确的做法是创建一个空的q之后，添加元素到costs同时添加到q，添加元素到processed时同时从q删除
     q = set(costs.keys())
-    for e in processed:
-        q.remove(e)
+    q = q - processed
 
     for node in q:
         cost = costs[node]
