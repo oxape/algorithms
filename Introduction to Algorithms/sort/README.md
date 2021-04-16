@@ -16,7 +16,7 @@ A[k-1]内是分割后的两个数组中k-start个最小的元素，且按照从�
 ## 快速排序
 
 1. 分割时注释初始条件<br>
-    k=pivot_index; 为了比较时不包括pivot_index <br>
+    k=pivot_index; 为了k++后从pivot_index+1的开始 <br>
     满足if (arr[j] < pivot)条件后 <br>
     先执行k++
 2. 递归时注意不包括pivot_index<br>
