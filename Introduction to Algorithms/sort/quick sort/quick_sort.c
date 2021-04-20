@@ -85,7 +85,7 @@ void quick_sort_iterative(int arr[], int start, int end) {
 
 int main() {
     int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18};
-    int len = sizeof(arr)/sizeof(int)-1;
+    int len = sizeof(arr)/sizeof(int);
     // quick_sort_recursive(0, arr, 0, len-1);
     quick_sort_iterative(arr, 0, len-1);
     for(int i=0; i<len+1; i++) {
