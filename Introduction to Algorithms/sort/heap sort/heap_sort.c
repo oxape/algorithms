@@ -41,7 +41,7 @@ void max_heapify_recursive(int arr[], int start, int end) {
     int parent_index = start;
     int left_child_index = parent_index*2+1;
     int right_child_index = parent_index*2+2;
-    if (left_child_index >= parent_index) {
+    if (left_child_index > end) {
         return;
     }
     if (right_child_index <= end && arr[left_child_index] < arr[right_child_index]) {
@@ -82,7 +82,7 @@ void heap_sort_recursive(int arr[], int start, int end) {
     for (int i=(end-1)/2; i>=0; i--) {
         max_heapify_recursive(arr, i, end);
     }
-    for(int i=0; i<=end; i++) {
+    for(int i=start; i<=end; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
@@ -96,6 +96,10 @@ void heap_sort_iterative(int arr[], int start, int end) {
     for (int i=(end-1)/2; i>=0; i--) {
         max_heapify_iterative(arr, i, end);
     }
+    for(int i=start; i<=end; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
     for (int i=end; i>0; i--) {
         swap(arr, 0, i);
         max_heapify_iterative(arr, 0, i-1);
@@ -103,10 +107,10 @@ void heap_sort_iterative(int arr[], int start, int end) {
 }
 
 int main() {
-    int arr[] = {10, 14, 3, 1, 15, 5, 4, 20, 21, 18, 29, 11, 12, 13};
+    int arr[] = {10, 14, 3, 1, 15, 5, 4, 20, 21, 18, 29, 11, 12, 9, 6};
     int len = sizeof(arr)/sizeof(int);
-    // heap_sort_recursive(arr, 0, len-1);
-    heap_sort_iterative(arr, 0, len-1);
+    heap_sort_recursive(arr, 0, len-1);
+    // heap_sort_iterative(arr, 0, len-1);
     for(int i=0; i<len; i++) {
         printf("%d ", arr[i]);
     }
