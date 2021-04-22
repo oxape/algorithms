@@ -50,7 +50,7 @@ int partition(int depth, int arr[], int start, int end) {
 }
 
 void quick_sort_recursive(int depth, int arr[], int start, int end) {
-    print(depth*4, "%d ~ %d\n", start, end);
+    print(depth*8, "%2d ~ %2d\n", start, end);
     if (start >= end) {
         return;
     }
@@ -84,10 +84,10 @@ void quick_sort_iterative(int arr[], int start, int end) {
 }
 
 int main() {
-    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18};
-    int len = sizeof(arr)/sizeof(int);
-    // quick_sort_recursive(0, arr, 0, len-1);
-    quick_sort_iterative(arr, 0, len-1);
+    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18, 9, 10, 33, 17};
+    int len = sizeof(arr)/sizeof(int)-1;
+    quick_sort_recursive(0, arr, 0, len-1);
+    // quick_sort_iterative(arr, 0, len-1);
     for(int i=0; i<len+1; i++) {
         printf("%d ", arr[i]);
     }

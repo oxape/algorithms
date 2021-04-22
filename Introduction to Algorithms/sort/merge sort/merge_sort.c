@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define print(num, fmt, ...)     {printf_blank(num); printf(fmt, ##__VA_ARGS__);}    
 
@@ -21,7 +22,7 @@ void merge_sort_recursive(int depth, int arr[], int reg[], int start, int end) {
         return;
     }
     if (start >= end) {
-        print(depth*4, "return\n");
+        print(depth*10, "%2d-%2d return\n", start, end);
         return;
     }
     int len = end-start;
@@ -32,7 +33,7 @@ void merge_sort_recursive(int depth, int arr[], int reg[], int start, int end) {
 
     int start2 = mid+1;
     int end2 = end;
-    print(depth*4, "%d-%d    %d-%d\n", start1, end1, start2, end2);
+    print(depth*10, "%2d-%2d %2d-%2d\n", start1, end1, start2, end2);
     merge_sort_recursive(depth+1, arr, reg, start1, end1);
     merge_sort_recursive(depth+1, arr, reg, start2, end2);
 
@@ -56,8 +57,8 @@ void merge_sort_recursive(int depth, int arr[], int reg[], int start, int end) {
             reg[k++] = arr[start2++];
         }
     }
-    print(depth*4, "");
-    printf("%d ~ %d => ", start, end);
+    print(depth*10, "");
+    printf("%2d~%2d => ", start, end);
     for (k = start; k <= end; k++) {
         arr[k] = reg[k];
         printf("%d ", arr[k]);
@@ -81,7 +82,7 @@ void merge_sort_iterative(int arr[], const int len) {
             int start2 = mid + 1;
             int end2 = end;
             int k = start1;
-            print(depth*4, "%d-%d    %d-%d\n", start1, end1, start2, end2);
+            print(depth*10, "%2d-%2d %2d-%2d\n", start1, end1, start2, end2);
             while(start1 <= end1 && start2 <= end2) {
                 if (a[start1] < a[start2]) {
                     b[k] = a[start1];
@@ -101,8 +102,8 @@ void merge_sort_iterative(int arr[], const int len) {
                     b[k++] = a[start1++];
                 }
             }
-            print(depth*4, "");
-            printf("%d ~ %d => ", start, end);
+            print(depth*10, "");
+            printf("%2d ~ %2d => ", start, end);
             for (k=start; k<=end; k++) {
                 a[k] = b[k];
                 printf("%d ", arr[k]);
@@ -154,16 +155,25 @@ void merge_sort_iterative_wiki(int arr[], const int len) {
     free(b);
 }
 
+void merge_sort_stack_simulative(int arr[], int reg[], int start, int end) {
+    printf("merge_sort_stack_simulative\n");
+    while (true)
+    {
+        /* code */
+    }
+    
+}
+
 void merge_sort(int arr[], const int len) {
     int reg[len];
     merge_sort_recursive(0, arr, reg, 0, len-1);
 }
 
 int main() {
-    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18};
+    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18, 9, 10, 33, 17};
     int len = sizeof(arr)/sizeof(int)-1; //remain last value
-    // merge_sort(arr, len);
-    merge_sort_iterative(arr, len);
+    merge_sort(arr, len);
+    // merge_sort_iterative(arr, len);
     // merge_sort_iterative_wiki(arr, len);
     for(int i=0; i<len+1; i++) {
         printf("%d ", arr[i]);
