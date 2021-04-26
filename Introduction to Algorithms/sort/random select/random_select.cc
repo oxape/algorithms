@@ -41,10 +41,10 @@ bool pop(int *value) {
 int random_partition(int arr[], int start, int end) {
     int pivot;
     int k;
-    std::default_random_engine e(time(NULL));
-    std::uniform_int_distribution<int> d(start, end);
-    int pivot_index = d(e);
-    swap(arr, start, pivot_index);
+    // std::default_random_engine e(time(NULL));
+    // std::uniform_int_distribution<int> d(start, end);
+    // int pivot_index = d(e);
+    // swap(arr, start, pivot_index);
     pivot = arr[start];
     k = start;
     for (int j=start+1; j<=end; j++) {
@@ -59,12 +59,8 @@ int random_partition(int arr[], int start, int end) {
 
 int random_select_recursive(int depth, int arr[], int start, int end, int r) {
     print(depth*8, "%2d ~ %2d\n", start, end);
-    if (start >= end) {
-        if (start == r) {
-            return arr[start];
-        } else {
-            return arr[start];
-        }
+    if (start == end) {
+        return arr[start];
     }
     int pivot_index = random_partition(arr, start, end);
     if (pivot_index == r) {
