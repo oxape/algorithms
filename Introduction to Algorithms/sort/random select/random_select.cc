@@ -63,13 +63,13 @@ int random_select_recursive(int depth, int arr[], int start, int end, int r) {
         return arr[start];
     }
     int pivot_index = random_partition(arr, start, end);
-    if (pivot_index == r) {
+    if (pivot_index == start+r) {
         return arr[pivot_index];
     }
-    if (pivot_index > r) {
+    if (start+r < pivot_index) {
         return random_select_recursive(depth+1, arr, start, pivot_index-1, r);
     } else {
-        return random_select_recursive(depth+1, arr, pivot_index+1, end, r);
+        return random_select_recursive(depth+1, arr, pivot_index+1, end, r-(pivot_index-start+1));
     }
 }
 
@@ -127,6 +127,9 @@ int main() {
     int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18, 9, 10, 33, 17};
     int len = sizeof(arr)/sizeof(int);
     int tmp[14] = {};
+    // int r = random_select_recursive(0, tmp, 0, len-1, 12);
+    // int r = random_select_iterative(arr, 0, len-1, i);
+    // printf("%d at index %d\n", r, 12);
     for (int i = 0; i<len; i++) {
         for (int k = 0; k<len; k++) {
             tmp[k] = arr[k];
