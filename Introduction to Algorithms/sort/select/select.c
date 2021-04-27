@@ -31,37 +31,41 @@ int partition(int arr[], int p, int r, int x) {
 }
 
 int select(int arr[], int start, int end, int i) {
-    if (i<=end-start) {
+    printf("%2d~%2d %2d\n", start, end, i);
+    if (end-start<5) {
         bubble(arr, start, end);
         return arr[start+i];
     }
-    for (int j=start; j<=end; j+=5) {
-        int s = i;
-        int e = i+4;
+    for (int j=start; j+4<=end; j+=5) {
+        int s = j;
+        int e = j+4;
         bubble(arr, s, e);
-        swap(arr, start+i/5, s+2);
+        swap(arr, start+j/5, s+2);
     }
     // if (i>5) {
        
     // }
-    int x = select(arr, start, start+(end-start)/5, (end-start)/5/2);
-    int pivot_index = partition(arr, start, end, i);
+    int x = select(arr, start, start+(end-start-4)/5, (end-start)/5/2);
+    int pivot_index = partition(arr, start, end, x);
+    printf("x = %2d pivot_index = %2d\n", x, pivot_index);
     if (i+start == pivot_index) {
         return x;
     }
     if (i+start < pivot_index) {
-        select(arr, start, pivot_index-1, i);
+        return select(arr, start, pivot_index-1, i);
     } else {
-        select(arr, start, pivot_index+1, i-(pivot_index-start+1));
+        return select(arr, pivot_index+1, end, i-(pivot_index-start+1));
     }
 }
 
 int main() {
-    int arr[] = {10, 9, 12, 3, 4, 22, 6, 16, 8, 17, 23, 32, 27, 23, 18, 24};
+    int arr[] = {10, 9, 12, 3, 4, 22, 6, 16, 8, 17, 23, 32, 27, 25, 18, 24};
     int len = sizeof(arr)/sizeof(int);
-    int index = 8;//(len-1)/2;
-    int x = select(arr, 0, len-1, index);
-    printf("%d at index %d\n", x, index);
+    int *tmp = (int *)malloc(len);
+
+    for (int i = 0; i < len; i++) {
+        tmp[i] = arr[i];
+    }
 #if 1
     //bubble check
     for (int i = 0; i < len; i++) {
@@ -74,4 +78,19 @@ int main() {
     }
     printf("\n");
 #endif
+    // for (int index=0; index<len; index++) {
+    //     for (int i = 0; i < len; i++) {
+    //         // printf("%2d ", tmp[i]);
+    //         arr[i] = tmp[i];
+    //     }
+    //     // printf("\n");
+
+    //     // int index = 8;//(len-1)/2;
+    //     int x = select(arr, 0, len-1, index);
+    //     printf("%d at index %d\n", x, index);
+    // }
+    int index = 5;//(len-1)/2;
+    int x = select(arr, 0, len-1, index);
+    printf("%d at index %d\n", x, index);
+    free(tmp);
 }
