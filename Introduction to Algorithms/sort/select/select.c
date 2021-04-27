@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// #define DEBUG
+
 void swap(int arr[], int a, int b) {
     int tmp;
     tmp = arr[a];
@@ -31,9 +33,17 @@ int partition(int arr[], int p, int r, int x) {
 }
 
 int select(int arr[], int start, int end, int i) {
+#ifdef DEBUG
     printf("%2d~%2d %2d\n", start, end, i);
+#endif
     if (end-start<5) {
         bubble(arr, start, end);
+#ifdef DEBUG
+        for (int k = start; k <= end; k++) {
+            printf("%2d ", arr[k]);
+        }
+        printf("\n");
+#endif
         return arr[start+i];
     }
     for (int j=start; j+4<=end; j+=5) {
@@ -46,8 +56,20 @@ int select(int arr[], int start, int end, int i) {
        
     // }
     int x = select(arr, start, start+(end-start-4)/5, (end-start)/5/2);
+#ifdef DEBUG
+    for (int k = start; k <= end; k++) {
+        printf("%2d ", arr[k]);
+    }
+    printf("\n");
+#endif
     int pivot_index = partition(arr, start, end, x);
-    printf("x = %2d pivot_index = %2d\n", x, pivot_index);
+#ifdef DEBUG
+    printf(" x = %2d pivot_index = %2d\n", x, pivot_index);
+    for (int k = start; k <= end; k++) {
+        printf("%2d ", arr[k]);
+    }
+    printf("\n");
+#endif
     if (i+start == pivot_index) {
         return x;
     }
@@ -78,18 +100,18 @@ int main() {
     }
     printf("\n");
 #endif
-    // for (int index=0; index<len; index++) {
-    //     for (int i = 0; i < len; i++) {
-    //         // printf("%2d ", tmp[i]);
-    //         arr[i] = tmp[i];
-    //     }
-    //     // printf("\n");
+    for (int index=0; index<len; index++) {
+        for (int i = 0; i < len; i++) {
+            // printf("%2d ", tmp[i]);
+            arr[i] = tmp[i];
+        }
+        // printf("\n");
 
-    //     // int index = 8;//(len-1)/2;
-    //     int x = select(arr, 0, len-1, index);
-    //     printf("%d at index %d\n", x, index);
-    // }
-    int index = 5;//(len-1)/2;
+        // int index = 8;//(len-1)/2;
+        int x = select(arr, 0, len-1, index);
+        printf("%d at index %d\n", x, index);
+    }
+    int index = 8;//(len-1)/2;
     int x = select(arr, 0, len-1, index);
     printf("%d at index %d\n", x, index);
     free(tmp);
