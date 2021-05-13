@@ -4,12 +4,30 @@
 
 #define print(num, fmt, ...)     {printf_blank(num); printf(fmt, ##__VA_ARGS__);}    
 
+int g_stack[1024] = {0};
+int g_index = 1024;
+
 void printf_blank(int num) {
     for (int i = 0; i < num; i++) {
         printf(" ");
     }
 }
 
+void push(int value) {
+    if (g_index > 0) {
+        g_index--;
+        g_stack[g_index] = value;
+    }
+}
+
+bool pop(int *value) {
+    if (g_index < 1024) {
+        *value = g_stack[g_index];
+        g_index++;
+        return true;
+    }
+    return false;
+}
 int min(int x, int y) {
     return x < y ? x : y;
 }
@@ -157,11 +175,61 @@ void merge_sort_iterative_wiki(int arr[], const int len) {
 
 void merge_sort_stack_simulative(int arr[], int reg[], int start, int end) {
     printf("merge_sort_stack_simulative\n");
-    while (true)
-    {
-        /* code */
+    int depth = 0;
+    int left;
+    int right;
+    push(start);
+    push(end);
+    while (true) {
+        if (!pop(&right) || !pop(&left)) {
+            break;
+        }
+        if (right >= left) {
+            
+        }  else {
+
+        }
+        int len = right-left;
+        int mid = len/2 + left;
+        
+        int start1 = left;
+        int end1 = mid;
+
+        int start2 = mid+1;
+        int end2 = right;
+        push(start2);
+        push(end2);
+        push(start1);
+        push(end1);
+
+        int k = start;
+        while(start1 <= end1 && start2 <= end2) {
+            if (arr[start1] < arr[start2]) {
+                reg[k] = arr[start1];
+                start1++;
+            } else {
+                reg[k] = arr[start2];
+                start2++;
+            }
+            k++;
+        }
+        if (start1 <= end1) {
+            while(start1 <= end1) {
+                reg[k++] = arr[start1++];
+            }
+        } else {
+            while(start2 <= end2) {
+                reg[k++] = arr[start2++];
+            }
+        }
+        print(depth*10, "");
+        printf("%2d~%2d => ", start, end);
+        for (k = start; k <= end; k++) {
+            arr[k] = reg[k];
+            printf("%d ", arr[k]);
+        }
+        printf("\n");
     }
-    
 }
 
 void merge_sort(int arr[], const int len) {
