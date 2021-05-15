@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stack>
+#include <tuple>
 
 #define print(num, fmt, ...)     {printf_blank(num); printf(fmt, ##__VA_ARGS__);}    
 
-int g_stack[1024] = {0};
-int g_index = 1024;
+using namespace std;
 
 void printf_blank(int num) {
     for (int i = 0; i < num; i++) {
@@ -13,21 +14,6 @@ void printf_blank(int num) {
     }
 }
 
-void push(int value) {
-    if (g_index > 0) {
-        g_index--;
-        g_stack[g_index] = value;
-    }
-}
-
-bool pop(int *value) {
-    if (g_index < 1024) {
-        *value = g_stack[g_index];
-        g_index++;
-        return true;
-    }
-    return false;
-}
 int min(int x, int y) {
     return x < y ? x : y;
 }
@@ -173,73 +159,118 @@ void merge_sort_iterative_wiki(int arr[], const int len) {
     free(b);
 }
 
+// #define LOG_ACTION_PUSH
+// #define LOG_ACTION_POP
+
 void merge_sort_stack_simulative(int arr[], int reg[], int start, int end) {
     printf("merge_sort_stack_simulative\n");
     int depth = 0;
-    int left;
-    int right;
-    push(start);
-    push(end);
+    int state;
+    stack< tuple<int, int, int> > s;
+#ifdef LOG_ACTION_PUSH
+    printf("push  %2d~%2d    %s\n", start, end, "分解");
+#endif
+    s.push(make_tuple(start, end, 0));
     while (true) {
-        if (!pop(&right) || !pop(&left)) {
+        if (s.empty()) {
             break;
         }
-        if (right >= left) {
+        auto t = s.top();
+        start = get<0>(t);
+        end = get<1>(t);
+        state = get<2>(t);
+        s.pop();
+#ifdef LOG_ACTION_POP
+        printf("pop   %2d~%2d    %s\n", start, end, state==0?"分解":"合并");
+#endif
+        switch (state)
+        {
+        case 0: {
+            if (start >= end) {
+                continue;
+            }
+            int len = end-start;
+            int mid = len/2 + start;
             
-        }  else {
+            int start1 = start;
+            int end1 = mid;
 
+            int start2 = mid+1;
+            int end2 = end;
+            depth += 1;
+            #ifdef LOG_ACTION_PUSH
+                printf("push  %2d~%2d    %s\n", start, end, "合并");
+            #endif
+            s.push(make_tuple(start, end, 1));
+            #ifdef LOG_ACTION_PUSH
+                printf("push  %2d~%2d    %s\n", start2, end2, "分解");
+            #endif
+            s.push(make_tuple(start2, end2, 0));
+            #ifdef LOG_ACTION_PUSH
+                printf("push  %2d~%2d    %s\n", start1, end1, "分解");
+            #endif
+            s.push(make_tuple(start1, end1, 0));
         }
-        int len = right-left;
-        int mid = len/2 + left;
-        
-        int start1 = left;
-        int end1 = mid;
+            break;
+        case 1: {
+            depth -= 1;
+            int len = end-start;
+            int mid = len/2 + start;
+            
+            int start1 = start;
+            int end1 = mid;
 
-        int start2 = mid+1;
-        int end2 = right;
-        push(start2);
-        push(end2);
-        push(start1);
-        push(end1);
-
-        int k = start;
-        while(start1 <= end1 && start2 <= end2) {
-            if (arr[start1] < arr[start2]) {
-                reg[k] = arr[start1];
-                start1++;
+            int start2 = mid+1;
+            int end2 = end;
+            int k = start;
+            while(start1 <= end1 && start2 <= end2) {
+                if (arr[start1] < arr[start2]) {
+                    reg[k] = arr[start1];
+                    start1++;
+                } else {
+                    reg[k] = arr[start2];
+                    start2++;
+                }
+                k++;
+            }
+            if (start1 <= end1) {
+                while(start1 <= end1) {
+                    reg[k++] = arr[start1++];
+                }
             } else {
-                reg[k] = arr[start2];
-                start2++;
+                while(start2 <= end2) {
+                    reg[k++] = arr[start2++];
+                }
             }
-            k++;
-        }
-        if (start1 <= end1) {
-            while(start1 <= end1) {
-                reg[k++] = arr[start1++];
+            print(depth*10, "");
+            printf("%2d~%2d => ", start, end);
+            for (k = start; k <= end; k++) {
+                arr[k] = reg[k];
+                printf("%d ", arr[k]);
             }
-        } else {
-            while(start2 <= end2) {
-                reg[k++] = arr[start2++];
-            }
+            printf("\n");
         }
-        print(depth*10, "");
-        printf("%2d~%2d => ", start, end);
-        for (k = start; k <= end; k++) {
-            arr[k] = reg[k];
-            printf("%d ", arr[k]);
+            break;
+        default:
+            break;
         }
-        printf("\n");
     }
 }
 
 void merge_sort(int arr[], const int len) {
     int reg[len];
-    merge_sort_recursive(0, arr, reg, 0, len-1);
+    // merge_sort_recursive(0, arr, reg, 0, len-1);
+    merge_sort_stack_simulative(arr, reg, 0, len-1);
 }
 
 int main() {
-    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18, 9, 10, 33, 17};
+    int arr[] = {10, 12, 3, 1, 15, 5, 4, 20, 21, 18, 9, 10, 33, 23, 16, 23, 17};
+    // int arr[] = {10, 12, 3, 1, 17};
     int len = sizeof(arr)/sizeof(int)-1; //remain last value
+    for(int i=0; i<len+1; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
     merge_sort(arr, len);
     // merge_sort_iterative(arr, len);
     // merge_sort_iterative_wiki(arr, len);
