@@ -1,5 +1,5 @@
+from graphviz import Graph
 from enum import Enum
-
 
 class Color(Enum):
     Red = 0
@@ -92,3 +92,14 @@ class RBTree:
 if __name__ == '__main__':
     T = RBTree()
     l = [1, 48, 32, 12, 28, 13, 55, 22, 26, 35]
+
+    g = Graph()
+    g.node("1", label='2', style='filled', fillcolor='black', fontcolor='white')
+    g.node("2", label='3', style='filled', fillcolor='red', fontcolor='white')
+    g.node("3", label='nil', style='filled', fillcolor='black', fontcolor='white')
+    g.node("4", label='nil', style='filled', fillcolor='black', fontcolor='white')
+    g.node("5", label='nil', style='filled', fillcolor='black', fontcolor='white')
+    g.edge("1", "2", color='black')
+    g.edge("1", "3", color='black')
+    g.edge("2", "4", color='black')
+    g.edge("2", "5", color='black')
