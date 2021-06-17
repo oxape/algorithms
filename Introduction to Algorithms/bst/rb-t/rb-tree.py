@@ -41,6 +41,7 @@ def render_tree(t):
 class Color(Enum):
     Red = 0
     Black = 1
+    Error = 2
 
 
 class RBNode:
@@ -69,26 +70,38 @@ class RBNode:
 
 class RBTree:
     nil = RBNode(key=-1, color=Color.Black)
-    # nil.left = nil
-    # nil.right = nil
+    nil.p = nil
+    nil.left = nil
+    nil.right = nil
 
-    def __init__(self, root=nil):
-        self.root = root
+    def __init__(self):
+        self.root = RBTree.nil
+        self.root.p = RBTree.nil
+        self.root.left = RBTree.nil
+        self.root.right = RBTree.nil
 
     @classmethod
     def __traverse(cls, x: RBNode, func):
-        if x != RBTree.nil and x is not None:
+        if x != RBTree.nil:
             cls.__traverse(x.left, func)
             func(x)
             cls.__traverse(x.right, func)
 
+    @classmethod
+    def __mini_node(cls, x: RBNode):
+        y = RBTree.nil
+        while x != RBTree.nil:
+            y = x
+            x = x.left
+        return y
+
     def __left_rotate(self, x: RBNode):
         y = x.right
         x.right = y.left
-        if y.left != RBTree.nil and y.left is not None:
+        if y.left != RBTree.nil:
             y.left.p = x
         y.p = x.p
-        if x.p == RBTree.nil or x.p is None:
+        if x.p == RBTree.nil:
             self.root = y
         elif x == x.p.left:
             x.p.left = y
@@ -100,10 +113,10 @@ class RBTree:
     def __right_rotate(self, y: RBNode):
         x = y.left
         y.left = x.right
-        if x.right != RBTree.nil and x.right is not None:
+        if x.right != RBTree.nil:
             x.right.p = y
         x.p = y.p
-        if y.p == RBTree.nil or y.p is None:
+        if y.p == RBTree.nil:
             self.root = x
         elif y == y.p.right:
             y.p.right = x
@@ -115,14 +128,14 @@ class RBTree:
     def __insert(self, z: RBNode):
         y = RBTree.nil
         x = self.root
-        while x != RBTree.nil and x is not None:
+        while x != RBTree.nil:
             y = x
             if z.key < x.key:
                 x = x.left
             else:
                 x = x.right
         z.p = y
-        if y == RBTree.nil or y is None:
+        if y == RBTree.nil:
             self.root = z
         elif z.key < y.key:
             y.left = z
@@ -130,9 +143,9 @@ class RBTree:
             y.right = z
         z.left = RBTree.nil
         z.right = RBTree.nil
-        self.__fixup_red_red(z)
+        self.__insert_fixup(z)
 
-    def __fixup_red_red(self, z: RBNode):
+    def __insert_fixup(self, z: RBNode):
         while z.p.color == Color.Red:
             if z.p == z.p.p.left:
                 y = z.p.p.right
@@ -164,15 +177,103 @@ class RBTree:
                     self.__left_rotate(z.p.p)
         self.root.color = Color.Black
 
+    def __transplant(self, u, v):
+        if u.p == RBTree.nil:
+            self.root = v
+        elif u == u.p.left:
+            u.p.left = v
+        else:
+            u.p.right = v
+        v.p = u.p
+
+    def __delete_fixup(self, x: RBNode):
+        while x != self.root and x.color == Color.Black:
+            if x == x.p.left:
+                w = x.p.right
+                if w.color == Color.Red:
+                    w.color = Color.Black
+                    x.p.color = Color.Red
+                    self.__left_rotate(x.p)
+                    w = x.p.right
+                if w.left.color == Color.Black and w.right.color == Color.Black:
+                    w.color = Color.Red
+                    x = x.p
+                elif w.right.color == Color.Black:
+                    w.left.color = Color.Black
+                    w.color = Color.Red
+                    self.__right_rotate(w)
+                    w = x.p.right
+                    w.color = x.p.color
+                    x.p.color = Color.Black
+                    w.right.color = Color.Black
+                    self.__left_rotate(x.p)
+                    x = self.root
+            else:
+                w = x.p.left
+                if w.color == Color.Red:
+                    w.color = Color.Black
+                    x.p.color = Color.Red
+                    self.__right_rotate(x.p)
+                    w = x.p.left
+                if w.left.color == Color.Black and w.right.color == Color.Black:
+                    w.color = Color.Red
+                    x = x.p
+                elif w.left.color == Color.Black:
+                    w.right.color = Color.Black
+                    w.color = Color.Red
+                    self.__left_rotate(w)
+                    w = x.p.left
+                    w.color = x.p.color
+                    x.p.color = Color.Black
+                    w.left.color = Color.Black
+                    self.__right_rotate(x.p)
+                    x = self.root
+        x.color = Color.Black
+
     def insert(self, key: int):
         n = RBNode(key, Color.Red)
         self.__insert(n)
 
-    def delete(self, node):
-        pass
+    def delete(self, key):
+        z = self.find(key)
+        if z is None:
+            return None
+        y = z
+        y_original_color = y.color
+        if z.left == RBTree.nil:
+            x = z.right
+            self.__transplant(z, z.right)
+        elif z.right == RBTree.nil:
+            x = z.left
+            self.__transplant(z, z.left)
+        else:
+            y = RBTree.__mini_node(z.right)
+            y_original_color = y.color
+            x = y.right
+            if y == z.right:
+                x.p = y
+            else:
+                self.__transplant(y, y.right)
+                y.right = z.right
+                y.right.p = y
+            self.__transplant(z, y)
+            y.left = z.left
+            y.left.p = y
+            y.color = z.color
+        if y_original_color == Color.Black:
+            self.__delete_fixup(x)
+        return z
 
     def find(self, key):
-        pass
+        x = self.root
+        while x != RBTree.nil:
+            if x.key == key:
+                return x
+            elif x.key > key:
+                x = x.left
+            else:
+                x = x.right
+        return None
 
     def traverse(self, *args):
         def print_func(x: RBNode):
@@ -184,24 +285,15 @@ class RBTree:
 
 
 if __name__ == '__main__':
+    '''
+    case 1
+    '''
     T = RBTree()
-    l = [1, 48, 32, 12, 28, 13, 55, 22, 26, 35]
-    for e in l:
+    key_list = [11, 1, 19, 44, 13, 12, 22, 32, 33, 35, 48]
+    for e in key_list:
         T.insert(e)
-    # T.insert(1)
-    # T.insert(48)
-    # T.insert(32)
-    T.traverse()
+    T.delete(19)
+    T.delete(32)
+    T.delete(44)
     g = render_tree(T)
     g.render(filename='g', view=True)
-
-    # g = Graph()
-    # g.node("1", label='2', style='filled', fillcolor='black', fontcolor='white')
-    # g.node("2", label='3', style='filled', fillcolor='red', fontcolor='white')
-    # g.node("3", label='nil', style='filled', fillcolor='black', fontcolor='white')
-    # g.node("4", label='nil', style='filled', fillcolor='black', fontcolor='white')
-    # g.node("5", label='nil', style='filled', fillcolor='black', fontcolor='white')
-    # g.edge("1", "2", color='black')
-    # g.edge("1", "3", color='black')
-    # g.edge("2", "4", color='black')
-    # g.edge("2", "5", color='black')
