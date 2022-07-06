@@ -9,22 +9,30 @@ def build_graph():
     def build_edge_with_id(context, char, node):
         nonlocal node_id
         for key, child in node._children.items():
+            label=key
+            number = str(ord(key)+1)
+            if key == '\0':
+                label = 'null'
             if child._value is None:
-                g.node(context+key, label=key, style='filled', fillcolor='white', fontcolor='black')
+                g.node(context+number, label=label, style='filled', fillcolor='white', fontcolor='black')
             else:
-                g.node(context+key, label=key, style='filled', fillcolor='blue', fontcolor='black')
-            g.edge(context, context+key, color='black')
+                g.node(context+number, label=label, style='filled', fillcolor='blue', fontcolor='black')
+            g.edge(context, context+number, color='black')
     return g, build_edge_with_id
 
 def render_tree(t):
     g, b = build_graph()
     g.node('root', label='root', style='filled', fillcolor='white', fontcolor='black')
     for key, child in t._children.items():
+        label = key
+        number = str(ord(key)+1)
+        if key == '\0':
+            label = 'null'
         if child._value is None:
-            g.node('root'+key, label=key, style='filled', fillcolor='white', fontcolor='black')
+            g.node('root'+number, label=label, style='filled', fillcolor='white', fontcolor='black')
         else:
-            g.node('root'+key, label=key, style='filled', fillcolor='blue', fontcolor='black')
-        g.edge('root', 'root'+key, color='black')
+            g.node('root'+number, label=label, style='filled', fillcolor='blue', fontcolor='black')
+        g.edge('root', 'root'+number, color='black')
     t.traverse('root', b)
     return g
 
@@ -60,8 +68,9 @@ class Node(object):
     def __traverse(cls, x, context, func:Callable):
         if x != None:
             for key, value in x._children.items():
-                func(context+key, key, value)
-                cls.__traverse(value, context+key, func)
+                number = str(ord(key)+1)
+                func(context+number, key, value)
+                cls.__traverse(value, context+number, func)
 
     def traverse(self, *args):
         Node.__traverse(self, *args)
@@ -95,6 +104,7 @@ class DaTrie:
         super().__init__()
         self.base = [0]*65535 # TODO:性能优化
         self.check = [0]*65535
+        self.beginSet = set()
         self.allocSize = 65535
         self.size = 0
         self.nextCheckPos = 0
@@ -105,11 +115,10 @@ class DaTrie:
         self.check.extend([0]*(self.size - size + 65535))
         self.allocSize += (self.size - size + 65535)
     
-    def code(key):
-        return ord(key)+1
+    def code(self, key):
+        return ord(key) if ord(key) == 0 else ord(key)+1
 
-    def insert_node(self, depth, node):
-        children = node.children()
+    def insert_children(self, depth, children):
         tab_width = 10
         begin = 0
         first = True
@@ -117,14 +126,14 @@ class DaTrie:
         keys = []
         for key, child in children.items():
             keys.append(key)
-        pos = max(self.nextCheckPos, self.code(keys[0])+1)-1
+        pos = max(self.code(keys[0])+1, self.nextCheckPos)-1 # pos要比self.code(keys[0])大的目的是防止base中非叶子节点出现负数
         while True:
             pos += 1
             if pos >= self.allocSize:
                 self.resize(pos+1)
 
             if self.check[pos] != 0:
-                print(f'{" "*depth*tab_width}|fail')
+                # print(f'{" "*depth*tab_width}|fail check [{pos}] at 0')
                 self.nonzero_num += 1
                 continue
             if first:
@@ -135,9 +144,14 @@ class DaTrie:
             if begin + self.code(keys[-1]) >= self.allocSize:
                 self.resize(begin + self.code(keys[-1]))
             
-             # TODO:性能优化
-            for _, key in enumerate(keys, 1):
+            # 防止不同的节点在base中有相同的begin，例如'1'和'2'在base数组中都是51，
+            # 那么'1xxx...','2xxx...'会冲突，无法区分'1'和'2'的子节点
+            if begin in self.beginSet:
+                continue
+            # TODO:性能优化
+            for i, key in enumerate(keys, 1):
                 if self.check[begin+self.code(key)] != 0:
+                    # print(f'{" "*depth*tab_width}|fail check [{begin+self.code(key)}] at {i}')
                     break
             else:
                 break
@@ -145,63 +159,46 @@ class DaTrie:
         if 1.0 * self.nonzero_num/(pos-self.nextCheckPos+1) >= 0.95:
             self.nextCheckPos = pos
 
+        self.beginSet.add(begin)
+
         if self.size < begin + self.code(keys[-1]) + 1:
             self.size = begin + self.code(keys[-1]) + 1
 
         for i in range(len(keys)):
             self.check[begin + self.code(keys[i])] = begin
 
-        for (int i = 0; i < siblings.size(); i++)
-        {
-            List<Node> new_siblings = new ArrayList<Node>();
+        for key, child in children.items():
+            if len(child.children()) == 0:
+                if child.value < 0: # 小于0是次if对应的else插入的节点 
+                    self.base[begin + self.code(key)] = child.value
+                    # print(f'{" "*depth*tab_width}|{key:2s} -> @{begin+self.code(key)} h={child.value}')
+                else:
+                    #修改trie
+                    child._add_child('\0', -child.value-1)
+                    h = self.insert_children(depth+1, child.children())
+                    self.base[begin+self.code(key)] = h
+                    # print(f'{" "*depth*tab_width}|{key:2s} -> @{begin+self.code(key)} h={h}')
+            else:
+                if child.value is not None:
+                    #修改trie
+                    child._add_child('\0', -child.value-1)
+                    child.children().move_to_end('\0', last=False)
 
-            if (fetch(siblings.get(i), new_siblings) == 0)  // 一个词的终止且不为其他词的前缀
-            {
-                base[begin + siblings.get(i).code] = (value != null) ? (-value[siblings
-                        .get(i).left] - 1) : (-siblings.get(i).left - 1);
-//                System.out.println(this);
-
-                if (value != null && (-value[siblings.get(i).left] - 1) >= 0)
-                {
-                    error_ = -2;
-                    return 0;
-                }
-
-                progress++;
-                // if (progress_func_) (*progress_func_) (progress,
-                // keySize);
-            }
-            else
-            {
-                Node node = siblings.get(i);
-                int h = insert(node.depth+1, new_siblings, used);   // dfs
-                tab = new String(new char[(depth-1)*tab_width]).replace("\0", " ");
-                if (node.code > 0) {
-                    System.out.println(String.format("%s|%-2s[%2d-%2d] -> @%d h=%d", tab, (char)(node.code - 1), node.left, node.right, begin + siblings.get(i).code, h));
-                }
-                base[begin + siblings.get(i).code] = h;
-//                System.out.println(this);
-            }
-        }
-        return begin;
-
-    def build_array(self, node):
-        self.base[0] = 1
-        self.check[0] = 0
-        # self.insert_node(0, node)
-
-        # children = node.children()
-        # for key, child in children.items():
-        #     self.build_array(child)
-        #     print(key)
+                h = self.insert_children(depth+1, child.children())
+                self.base[begin+self.code(key)] = h
+                # print(f'{" "*depth*tab_width}|{key:2s} -> @{begin+self.code(key)} h={h}')
+        return begin
 
     def build(self, root:Trie):
-        self.build_array(root)
+        self.base[0] = 1
+        self.check[0] = 0
+        children = root.children()
+        self.insert_children(0, children)
 
 
 if __name__ == '__main__':
     keys = [
-        "12",
+        "12", 
         "123",
         "212",
         "312",
@@ -222,5 +219,22 @@ if __name__ == '__main__':
     # build(trie)
     datrie = DaTrie()
     datrie.build(trie)
+
+    base = datrie.base
+    check = datrie.check
+    infoIndex    = "i    = "
+    infoChar     = "char = "
+    infoBase     = "base = "
+    infoCheck    = "check= "
+    for i in range(datrie.size):
+        if base[i] != 0 or check[i] != 0:
+            infoChar  += "    " +   ( "×" if i == check[i] else chr(i - check[i] - 1))
+            infoIndex += " " + f'{i:4d}'
+            infoBase  += " " + f'{base[i]:4d}'
+            infoCheck += " " + f'{check[i]:4d}'
+    print("\n" + infoChar +
+            "\n" + infoIndex +
+            "\n" + infoBase +
+            "\n" + infoCheck + "\n")
     g = render_tree(trie)
     g.render(filename='g', view=True)
