@@ -239,6 +239,10 @@ if __name__ == '__main__':
     btree_easy_insert(btree, 16)
     btree_easy_insert(btree, 16)
     btree_easy_insert(btree, 15)
+    btree_easy_insert(btree, 15)
+    btree_easy_insert(btree, 16)
+    btree_easy_insert(btree, 16)
+    btree_easy_insert(btree, 16)
     # btree_easy_insert(btree, 29)
 
     g = build_render()
