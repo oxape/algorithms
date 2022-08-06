@@ -2,29 +2,6 @@ from typing import *
 from graphviz import Digraph, nohtml
 from operator import itemgetter
 
-'''
-g = Digraph('g', filename='btree.gv',
-            node_attr={'shape': 'record', 'height': '.1'})
-g.node('node0', nohtml('<f0> |<f1> G|<f2>'))
-g.node('node1', nohtml('<f0> |<f1> E|<f2>'))
-g.node('node2', nohtml('<f0> |<f1> B|<f2>'))
-g.node('node3', nohtml('<f0> |<f1> F|<f2>'))
-g.node('node4', nohtml('<f0> |<f1> R|<f2>'))
-g.node('node5', nohtml('<f0> |<f1> H|<f2>'))
-g.node('node6', nohtml('<f0> |<f1> Y|<f2>'))
-g.node('node7', nohtml('<f0> |<f1> A|<f2>'))
-g.node('node8', nohtml('<f0> |<f1> C|<f2>'))
-g.edge('node0:f2', 'node4:f1')
-g.edge('node0:f0', 'node1:f1')
-g.edge('node1:f0', 'node2:f1')
-g.edge('node1:f2', 'node3:f1')
-g.edge('node2:f2', 'node8:f1')
-g.edge('node2:f0', 'node7:f1')
-g.edge('node4:f2', 'node6:f1')
-g.edge('node4:f0', 'node5:f1')
-g.view()
-'''
-
 def binary_search_to_insert(arr, key, getter=None):
     min = 0
     max = len(arr)
@@ -49,9 +26,12 @@ def binary_search_to_insert(arr, key, getter=None):
     return min
 
 class Item:
+    index = 0
     def __init__(self, key, value):
         self._key = key
         self._value = value
+        Item.index += 1
+        self.index = Item.index
     
     @property
     def key(self):
@@ -207,7 +187,7 @@ class BTree:
             for i in range(node.size):
                 if node.pointers[i] is not None:
                     nohtml_list.append(f'<f{str(id(node.pointers[i]))}>')
-                nohtml_list.append(f'{node.items[i].key}')
+                nohtml_list.append(f'{node.items[i].key}:{node.items[i].index}')
             if node.size > 0:
                 if node.pointers[node.size] is not None:
                     nohtml_list.append(f'<f{str(id(node.pointers[node.size]))}>')
@@ -255,7 +235,12 @@ if __name__ == '__main__':
     btree_easy_insert(btree, 15)
     btree_easy_insert(btree, 16)
     btree_easy_insert(btree, 17)
+    btree_easy_insert(btree, 15)
+    btree_easy_insert(btree, 16)
+    btree_easy_insert(btree, 16)
+    btree_easy_insert(btree, 15)
+    # btree_easy_insert(btree, 29)
 
     g = build_render()
     btree.traverse(g)
-    g.render(filename='g2', view=True)
+    g.render(filename='tmp/g', view=True)
