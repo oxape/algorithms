@@ -1,4 +1,7 @@
 **/tmp
+**/main
+**/main.dSYM
+
 
 /.vscode/*.log
 /.idea

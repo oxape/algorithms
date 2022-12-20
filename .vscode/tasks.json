@@ -12,7 +12,7 @@
                 "${file}"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/Introduction to Algorithms/sort/heap sort/"
+                "cwd": "${fileDirname}"
             }
         },
         {
