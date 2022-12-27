@@ -77,7 +77,7 @@ int select(int group, int depth, int arr[], int start, int end, int i, int *inde
     group_print(group, "\n");
 #endif
     //start+(end-start)/5-1 不包含最后remain的元素, start+(end-start)/5 包含最后remain的元素
-    int x = select(1, depth+1, arr, start, start+(end-start+1-4)/5, (end-start+1-4)/5/2, index_ptr); //end-start+1为[start~end]之间元素个数-4之后为了向下取整
+    int x = select(1, depth+1, arr, start, start+(end-start)/5, (end-start)/5/2, index_ptr); //end-start+1为[start~end]之间元素个数-4之后为了向下取整
 #ifdef DEBUG
     log_print(group, depth, "pivot = %d @%d [%d~%d]\n", x, *index_ptr, start, end);
     if (arr[*index_ptr] != x) {
