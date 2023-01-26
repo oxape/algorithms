@@ -1,6 +1,8 @@
 **/tmp
-**/main
-**/main.dSYM
+*.out
+*.dSYM
+*.gv.png
+*.gv
 
 
 /.vscode/*.log
