@@ -12,37 +12,39 @@ class AVLNode:
         self.rightChild = None
         self.parent = None
 
-    def leftHeght(self):
+    def height(self):
+        return max(self.leftHeight(), self.rightHeight())
+
+    def leftHeight(self):
         if self.leftChild is None:
             return 1
         else:
-            return self.leftChild.leftHeght()+1
+            return self.leftChild.height()+1
 
-    def rightHeght(self):
+    def rightHeight(self):
         if self.rightChild is None:
             return 1
         else:
-            return self.rightChild.rightHeght()+1
+            return self.rightChild.height()+1
 
     @property
     def balanceFactor(self):
-        return self.leftHeght()-self.rightHeght()
+        return self.leftHeight()-self.rightHeight()
 
     def insert(self, value):
         if value < self.value:
             if self.leftChild is None:
                 self.leftChild = AVLNode(value)
                 self.leftChild.parent = self
-                return self.leftChild
             else:
-                return self.leftChild.insert(value)
+                self.leftChild.insert(value)
         else:
             if self.rightChild is None:
                 self.rightChild = AVLNode(value)
                 self.rightChild.parent = self
-                return self.rightChild
             else:
-                return self.rightChild.insert(value)
+                self.rightChild.insert(value)
+        self.balance()
 
     def delete(self):
         pass
@@ -70,17 +72,17 @@ class AVLNode:
             self.rightChild.traversalInOrder()
 
     def balance(self):
-        if abs(self.balanceFactor()) < 2:
+        if abs(self.balanceFactor) < 2:
             return
-        if self.balanceFactor() == 2:
+        if self.balanceFactor == 2:
             # self.leftChild.leftHeght >= 
-            if self.leftChild.balanceFactor() >= 0:
+            if self.leftChild.balanceFactor >= 0:
                 self.rightRotate()
             else:
                 self.leftChild.leftRotate()
                 self.rightRotate()
         else:
-            if self.rightChild.balanceFactor() >= 0:
+            if self.rightChild.balanceFactor <= 0:
                 self.leftRotate()
             else:
                 self.rightChild.rightRotate()
@@ -92,7 +94,7 @@ class AVLNode:
             if self.parent.leftChild == self:
                 self.parent.leftChild = self
             else:
-                self.parent.righChild = self
+                self.parent.rightChild = self
         
         if self.rightChild is not None:
             rightChild = self.rightChild
@@ -108,7 +110,7 @@ class AVLNode:
             if self.parent.leftChild == self:
                 self.parent.leftChild = self
             else:
-                self.parent.righChild = self
+                self.parent.rightChild = self
         if self.leftChild is not None:
             leftChild = self.leftChild
             self.leftChild = self.leftChild.rightChild
@@ -139,12 +141,12 @@ class AVLTree:
 
 if __name__ == '__main__':
     avlTree = AVLTree()
-    avlTree.insert(100)
+    avlTree.insert(1)
     avlTree.insert(102)
     avlTree.insert(20)
-    avlTree.insert(1)
-    avlTree.insert(80)
-    avlTree.insert(200)
+    # avlTree.insert(100)
+    # avlTree.insert(80)
+    # avlTree.insert(200)
     avlTree.traversalInOrder()
 
     g = build_render()
