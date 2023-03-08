@@ -2,6 +2,55 @@ from typing import *
 from graphviz import Graph
 from collections import OrderedDict
 
+'''
+[
+    "12", 
+    "123",
+    "212",
+    "312",
+    "313",
+    "323",
+]
+以下面的字典树为例
+root
+├── 1
+│   └── 2
+│       └── 3
+├── 2
+│   └── 1
+│       └── 2
+└── 3
+    ├── 1
+    │   ├── 2
+    │   └── 3
+    └── 2
+        └── 3
+讨论树时root为0层
+ascii '1' to int 49
+ascii '2' to int 50
+ascii '3' to int 51
+
+i表示base数组和check数组的偏移
+
+char =     ×    1    2    3    2    ×    ×    1    2    ×    1    2    2    3    ×    ×    3    ×    3
+i    =     0   51   52   53   54   55   56   57   59   60   61   62   63   64   65   66   67   68  107
+base =     1    3    7   11   55   -1   -2    8   60   -3   12   15   65   66   -4   -5   68   -6   56
+check=     0    1    1    1    3   55   56    7    8   60   11   11   12   12   65   66   15   68   55
+
+使用unicode+1作为偏移，为了让空字符也能有一个数值0+1的偏移
+
+查找"313"的步骤，根节点的状态位为base[0]=1
+沿着'1'
+base[0]+('1'+1) = 1+(49+1) = 51  # 51这里放的是树第一层节点1的状态值base[51] = 3
+check[51] = 1表示父节点
+沿着'2'
+base[51]+('2'+1) = 3+(50+1) = 54
+check[54] = 3表示父节点
+沿着'3'
+base[51]+('2'+1) = 3+(50+1) = 54
+check[54] = 3表示父节点
+'''
+
 def build_graph():
     g = Graph(format='png')
     node_id = 0
@@ -236,5 +285,6 @@ if __name__ == '__main__':
             "\n" + infoIndex +
             "\n" + infoBase +
             "\n" + infoCheck + "\n")
+    print(base[0:datrie.size])
     g = render_tree(trie)
     g.render(filename='g', view=True)
