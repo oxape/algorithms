@@ -246,13 +246,49 @@ class DaTrie:
 
 
 if __name__ == '__main__':
+    # keys = [
+    #     "12", 
+    #     "123",
+    #     "212",
+    #     "312",
+    #     "313",
+    #     "323",
+    # ]
+
     keys = [
-        "12", 
-        "123",
-        "212",
-        "312",
-        "313",
-        "323",
+        f"{chr(0+1)}{chr(0+1)}",
+        f"{chr(1+1)}{chr(1+1)}",
+        f"{chr(2+1)}{chr(2+1)}",
+
+        f"{chr(0+1)}{chr(1+1)}",
+        f"{chr(0+1)}{chr(2+1)}",
+        f"{chr(0+1)}{chr(3+1)}",
+        f"{chr(0+1)}{chr(4+1)}",
+        f"{chr(0+1)}{chr(5+1)}",
+
+        f"{chr(1+1)}{chr(0+1)}",
+        f"{chr(1+1)}{chr(2+1)}",
+        f"{chr(1+1)}{chr(3+1)}",
+        f"{chr(1+1)}{chr(4+1)}",
+        f"{chr(1+1)}{chr(5+1)}",
+
+        f"{chr(2+1)}{chr(0+1)}",
+        f"{chr(2+1)}{chr(1+1)}",
+        f"{chr(2+1)}{chr(3+1)}",
+        f"{chr(2+1)}{chr(4+1)}",
+        f"{chr(2+1)}{chr(5+1)}",
+
+        f"{chr(3+1)}{chr(0+1)}",
+        f"{chr(3+1)}{chr(1+1)}",
+        f"{chr(3+1)}{chr(2+1)}",
+
+        f"{chr(4+1)}{chr(0+1)}",
+        f"{chr(4+1)}{chr(1+1)}",
+        f"{chr(4+1)}{chr(2+1)}",
+
+        f"{chr(5+1)}{chr(0+1)}",
+        f"{chr(5+1)}{chr(1+1)}",
+        f"{chr(5+1)}{chr(2+1)}",
     ]
     keys.sort()
     print(keys)
@@ -286,5 +322,6 @@ if __name__ == '__main__':
             "\n" + infoBase +
             "\n" + infoCheck + "\n")
     print(base[0:datrie.size])
+    print(check[0:datrie.size])
     g = render_tree(trie)
     g.render(filename='g', view=True)
