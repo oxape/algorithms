@@ -25,9 +25,11 @@ class PROTOvEB:
                 self.n += 1
             self.A[x] = 1
         else:
-            self.summary.insert(self.high(x))
+            h = self.high(x)
+            l = self.low(x)
+            self.summary.insert(h)
             # self.high返回x在self.cluster数组中的索引
-            self.cluster[self.high(x)].insert(self.low(x))
+            self.cluster[h].insert(l)
 
     def member(self, x):
         if self.u == 2:

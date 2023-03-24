@@ -2,7 +2,7 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "build-c0",
+            "label": "build-.c",
             "command": "gcc",
             "args": [
                 "-g",
@@ -16,13 +16,8 @@
             }
         },
         {
-            "label": "build-c",
-            "dependsOn": ["build-c0"],
-            "dependsOrder": "sequence"
-        },
-        {
             "type": "shell",
-            "label": "build-cpp0",
+            "label": "build-.cpp",
             "command": "g++",
             "args": [
                 "-std=c++20",
@@ -37,9 +32,20 @@
             }
         },
         {
-            "label": "build-cpp",
-            "dependsOn": ["build-cpp0"],
-            "dependsOrder": "sequence"
+            "type": "shell",
+            "label": "build-.cc",
+            "command": "g++",
+            "args": [
+                "-std=c++20",
+                "-g",
+                "-O0",
+                "-o",
+                "main",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            }
         }
     ],
     "version": "2.0.0"
