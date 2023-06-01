@@ -35,13 +35,13 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/main",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "externalConsole": false,
             "MIMode": "gdb",
-            "preLaunchTask": "build-`echo cc`",
+            "preLaunchTask": "build-${fileExtname}",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
