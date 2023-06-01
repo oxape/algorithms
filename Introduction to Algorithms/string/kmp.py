@@ -1,7 +1,5 @@
 
 
-
-
 class Solution(object):
     def strStr(self,  haystack,  needle):
         # dfa = self.dfa_construct(needle)
