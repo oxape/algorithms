@@ -117,7 +117,7 @@ class Solution(object):
             i += 1
         return -1
     
-    def pmp_search(self, txt, pat):
+    def ptm_search(self, txt, pat):
         i = 0
         j = 0
         next = self.next_construct_minus_one(pat)
@@ -143,5 +143,5 @@ if __name__ == '__main__':
     print(f'strStr = {result}')
     result = Solution().force_search(haystack,  needle)
     print(f'force_search = {result}')
-    result = Solution().pmp_search(haystack, needle)
-    print(f'pmp_search = {result}')
+    result = Solution().ptm_search(haystack, needle)
+    print(f'ptm_search = {result}')
