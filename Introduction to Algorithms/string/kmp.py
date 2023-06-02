@@ -6,12 +6,12 @@ class Solution(object):
         dfa = self.kmp_construct(needle)
         M = len(needle)
         j = 0
-        for i in range(len(haystack)):
+        i = 0
+        while i < len(haystack) and j < M:
             j = dfa[j][haystack[i]]
-            if j == M:
-                break
+            i += 1
         if (j == M):
-            return i - M + 1
+            return i - M
         return -1
 
     def dfa_construct(self,  pattern: str):
@@ -109,12 +109,15 @@ class Solution(object):
         while i < N:
             if txt[i] == pat[j]:
                 j += 1
+                i += 1
             else:
-                i -= j # 回退已经匹配的j个字符
+                '''
+                回退已经匹配的j-1个字符，即是当txt[i]=pattern[0]，但是txt[i+j]!=pattern[j]时，从i+1位置从新和pattern[0]匹配
+                '''
+                i -= j-1
                 j = 0 # 重置为已经匹配了0个字符
             if j == M:
-                return i - M + 1 # 找到匹配
-            i += 1
+                return i - M # 找到匹配
         return -1
     
     def ptm_search(self, txt, pat):
