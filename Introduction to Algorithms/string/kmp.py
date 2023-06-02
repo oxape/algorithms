@@ -92,13 +92,6 @@ class Solution(object):
                 j += 1
             else:
                 j = next[j]
-        '''
-        构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
-        1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
-        2、此时需要继续比较pattern[j]和txt[i]，
-        3、如果相等，j++，i++
-        4、如果不相等则另j=k，重新执行第1步
-        '''
         return next
     
     def force_search(self, txt, pat):
@@ -120,22 +113,29 @@ class Solution(object):
                 return i - M # 找到匹配
         return -1
     
-    def ptm_search(self, txt, pat):
-        i = 0
-        j = 0
-        next = self.next_construct_minus_one(pat)
-        while i<len(txt):
-            if j == -1:
-                j = 0
-                i += 1
-            elif pat[j] == txt[i]:
-                j += 1
-                i += 1
-                if j == len(pat):
-                    return i-j
-            else:
-                j = next[j]
-        return -1
+def ptm_search(self, txt, pat):
+    i = 0
+    j = 0
+    '''
+    构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
+    1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
+    2、此时需要继续比较pattern[j]和txt[i]，
+    3、如果相等，j++，i++
+    4、如果不相等则另j=k，重新执行第1步
+    '''
+    next = self.next_construct_minus_one(pat)
+    while i<len(txt):
+        if j == -1:
+            j = 0
+            i += 1
+        elif pat[j] == txt[i]:
+            j += 1
+            i += 1
+            if j == len(pat):
+                return i-j
+        else:
+            j = next[j]
+    return -1
 
 if __name__ == '__main__':
     # haystack = "BCBAABACAABABACAA"
