@@ -11,7 +11,7 @@ class Solution(object):
             if j == M:
                 break
         if (j == M):
-            return i-M
+            return i - M + 1
         return -1
 
     def dfa_construct(self,  pattern: str):
@@ -75,8 +75,33 @@ class Solution(object):
             '''
             X = dfa[X][pattern[j]]
         return dfa
+
+    def next_construct_minus_one(self, p: str):
+        M = len(p)
+        j = -1
+        i = 0
+        next = [-1] * (M+1)
+        while i < M:
+            if j == -1:
+                i += 1
+                next[i] = 0
+                j = 0
+            elif p[i] == p[j]:
+                i += 1
+                next[i] = j+1
+                j += 1
+            else:
+                j = next[j]
+        '''
+        构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
+        1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
+        2、此时需要继续比较pattern[j]和txt[i]，
+        3、如果相等，j++，i++
+        4、如果不相等则另j=k，重新执行第1步
+        '''
+        return next
     
-    def search(self,  txt,  pat):
+    def force_search(self, txt, pat):
         M = len(pat)
         N = len(txt)
         i = 0
@@ -88,12 +113,35 @@ class Solution(object):
                 i -= j # 回退已经匹配的j个字符
                 j = 0 # 重置为已经匹配了0个字符
             if j == M:
-                return i - M # 找到匹配
+                return i - M + 1 # 找到匹配
             i += 1
+        return -1
+    
+    def pmp_search(self, txt, pat):
+        i = 0
+        j = 0
+        next = self.next_construct_minus_one(pat)
+        while i<len(txt):
+            if j == -1:
+                j = 0
+                i += 1
+            elif pat[j] == txt[i]:
+                j += 1
+                i += 1
+                if j == len(pat):
+                    return i-j
+            else:
+                j = next[j]
         return -1
 
 if __name__ == '__main__':
-    haystack = "BCBAABACAABABACAA"
-    needle = "ABABAC"
-    result = Solution().search(haystack,  needle)
-    print(f'result = {result}')
+    # haystack = "BCBAABACAABABACAA"
+    # needle = "ABABAC"
+    haystack = "AAAAAABCDE"
+    needle = "ABCDE"
+    result = Solution().strStr(haystack,  needle)
+    print(f'strStr = {result}')
+    result = Solution().force_search(haystack,  needle)
+    print(f'force_search = {result}')
+    result = Solution().pmp_search(haystack, needle)
+    print(f'pmp_search = {result}')
