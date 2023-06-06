@@ -1,6 +1,6 @@
 
 
-class Solution(object):
+class Solution:
     def strStr(self,  haystack,  needle):
         # dfa = self.dfa_construct(needle)
         dfa = self.kmp_construct(needle)
@@ -113,38 +113,91 @@ class Solution(object):
                 return i - M # 找到匹配
         return -1
     
-def ptm_search(self, txt, pat):
-    i = 0
-    j = 0
+    def ptm_search(self, txt, pat):
+        i = 0
+        j = 0
+        '''
+        构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
+        1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
+        2、此时需要继续比较pattern[j]和txt[i]，
+        3、如果相等，j++，i++
+        4、如果不相等则另j=k，重新执行第1步
+        '''
+        next = self.next_construct_minus_one(pat)
+        while i<len(txt):
+            if j == -1:
+                j = 0
+                i += 1
+            elif pat[j] == txt[i]:
+                j += 1
+                i += 1
+                if j == len(pat):
+                    return i-j
+            else:
+                j = next[j]
+        return -1
+
+
+class KMP:
     '''
-    构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
-    1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
-    2、此时需要继续比较pattern[j]和txt[i]，
-    3、如果相等，j++，i++
-    4、如果不相等则另j=k，重新执行第1步
+    这个可以找出所有匹配的字符，而不仅仅是第一个
     '''
-    next = self.next_construct_minus_one(pat)
-    while i<len(txt):
-        if j == -1:
-            j = 0
-            i += 1
-        elif pat[j] == txt[i]:
-            j += 1
-            i += 1
-            if j == len(pat):
-                return i-j
-        else:
-            j = next[j]
-    return -1
+    def KMP_MATCHER(self, T, P):
+        n = len(T)
+        m = len(P)
+        '''
+        pi数组包含对于某个q
+        pattern[0:q](不包含q)
+        pattern[0:q]
+        pi[q] = pattern[0:q](不包含q)的最大前后缀
+        '''
+        pi = self.COMPUTE_PREFIX_FUNCTION(P)
+        print(f'pi = {pi}')
+        '''
+        以下算法的本质是在patter[s:s+q]==T[s:s+i]成立时，patter[q]!=T[i]的情况下
+        尝试下一个s'>s时，利用已有的patter[s:s+q]==T[s:s+i]，跳过所有不可能匹配的s'
+        分别尝试pi[q]、pi[pi[q]]、pi[pi[pi[q]]]...
+        另:
+        pi^0(q) = pi[q]
+        pi^1(q) = pi[pi[q]]
+        pi^2(q) = pi[pi[pi[q]]]
+        依次尝试pi^0(q)、pi^1(q)....直到pi^i(q)=0
+        '''
+        q = 0 # number of characters matched
+        for i in range(0, n): # scan the text from left to right
+            while q > 0 and P[q] != T[i]:
+                q = pi[q] # next character does not match
+            if P[q] == T[i]:
+                q = q + 1 # next character matches
+            if q == m: # is all of P matched?
+                q = pi[q-1] # look for the next match
+                print(f'Pattern occurs with shift {i - m + 1} next match position at {q}') # 打印出所有匹配的字符
+    
+    def COMPUTE_PREFIX_FUNCTION(self, P):
+        m = len(P)
+        pi = [0]*(m)
+        pi[0] = 0
+        k = 0
+        for q in range(1, m):
+            while k > 0 and P[k] != P[q]:
+                k = pi[k]
+            if P[k] == P[q]:
+                k = k + 1
+            pi[q] = k
+        return pi
 
 if __name__ == '__main__':
-    # haystack = "BCBAABACAABABACAA"
-    # needle = "ABABAC"
-    haystack = "AAAAAABCDE"
-    needle = "ABCDE"
+    haystack = "BCBAABACAABABACAA"
+    needle = "ABABAC"
+    # haystack = "AAAAAABCDE"
+    # needle = "ABCDE"
     result = Solution().strStr(haystack,  needle)
     print(f'strStr = {result}')
     result = Solution().force_search(haystack,  needle)
     print(f'force_search = {result}')
     result = Solution().ptm_search(haystack, needle)
     print(f'ptm_search = {result}')
+
+    haystack = "BCBAABACAABABACAABABACA"
+    needle = "ABABACA"
+    KMP().KMP_MATCHER(haystack, needle)
