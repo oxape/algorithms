@@ -64,14 +64,14 @@ class Solution:
             这时相当于把pattern[1:j](不包括pattern[j])输入状态机得到一个状态X, 然后从X状态继续输入txt[j], 便可以得到状态j中除了匹配(txt[i+j] == pattern[j])状态的其他状态。
 
             例如pattern = 'ABABAC'
-            每次状态j的状态机计算完成后, 都要计算下一个状态的失配后的重启状态, 状态0时重启状态是0，状态1时由于pattern[1:j] = pattern[1:1] = ''，所以重启状态也是0。
+            每次状态j的状态机计算完成后, 都要计算下一个状态的失配后的重启状态, 状态0时重启状态是0, 状态1时由于pattern[1:j] = pattern[1:1] = '', 所以重启状态也是0。
             所以复制状态0的dfa[0][...]到状态1的dfa[1][...](除了匹配状态)
-            当前状态是1，计算状态2时:如果失配相当于pattern[1:j] = pattern[1:2] = 'B'输入状态机，由于此时状态机[0:2](不包括2)都已经计算完毕，所以可以从重启状态0输入'B'得到状态2的重启状态
+            当前状态是1, 计算状态2时:如果失配相当于pattern[1:j] = pattern[1:2] = 'B'输入状态机, 由于此时状态机[0:2](不包括2)都已经计算完毕, 所以可以从重启状态0输入'B'得到状态2的重启状态
             计算得到状态2的重启状态还是0。记住此时的X等于从状态0开始输入了一个字符'B'
-            当前状态是2，状态3时:如果失配相当于pattern[1:j] = pattern[1:3] = 'BA'输入状态机，而此时X保存的状态是已经输入了'B'的状态，此时从X状态继续输入'A'即可得到状态4的重启状态1
-            当前状态是3，状态4时:如果失配相当于pattern[1:j] = pattern[1:4] = 'BAB'输入状态机，而此时X保存的状态是已经输入了'BA'的状态，此时从X状态继续输入'B'即可得到状态5的重启状态2
-            当前状态是4，状态5时:如果失配相当于pattern[1:j] = pattern[1:5] = 'BABA'输入状态机，而此时X保存的状态是已经输入了'BAB'的状态，此时从X状态继续输入'A'即可得到状态5的重启状态3
-            当前状态是5，状态6时:已经不需要计算状态6了，因为状态6了，因为状态6是终止态此时可以退出搜索了
+            当前状态是2, 状态3时:如果失配相当于pattern[1:j] = pattern[1:3] = 'BA'输入状态机, 而此时X保存的状态是已经输入了'B'的状态, 此时从X状态继续输入'A'即可得到状态4的重启状态1
+            当前状态是3, 状态4时:如果失配相当于pattern[1:j] = pattern[1:4] = 'BAB'输入状态机, 而此时X保存的状态是已经输入了'BA'的状态, 此时从X状态继续输入'B'即可得到状态5的重启状态2
+            当前状态是4, 状态5时:如果失配相当于pattern[1:j] = pattern[1:5] = 'BABA'输入状态机, 而此时X保存的状态是已经输入了'BAB'的状态, 此时从X状态继续输入'A'即可得到状态5的重启状态3
+            当前状态是5, 状态6时:已经不需要计算状态6了, 因为状态6了, 因为状态6是终止态此时可以退出搜索了
             '''
             X = dfa[X][pattern[j]]
         return dfa
@@ -105,7 +105,7 @@ class Solution:
                 i += 1
             else:
                 '''
-                回退已经匹配的j-1个字符，即是当txt[i]=pattern[0]，但是txt[i+j]!=pattern[j]时，从i+1位置从新和pattern[0]匹配
+                回退已经匹配的j-1个字符, 即是当txt[i]=pattern[0], 但是txt[i+j]!=pattern[j]时, 从i+1位置从新和pattern[0]匹配
                 '''
                 i -= j-1
                 j = 0 # 重置为已经匹配了0个字符
@@ -117,11 +117,11 @@ class Solution:
         i = 0
         j = 0
         '''
-        构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时，
-        1、pattern[1:j](不包括k)的最长前后缀是多少，例如为k，
-        2、此时需要继续比较pattern[j]和txt[i]，
-        3、如果相等，j++，i++
-        4、如果不相等则另j=k，重新执行第1步
+        构造好的next数组表示当前模式中的第j(此处j仅代表索引和函数内的j变量没有关系)匹配失败时, 
+        1、pattern[1:j](不包括k)的最长前后缀是多少, 例如为k, 
+        2、此时需要继续比较pattern[j]和txt[i], 
+        3、如果相等, j++, i++
+        4、如果不相等则另j=k, 重新执行第1步
         '''
         next = self.next_construct_minus_one(pat)
         while i<len(txt):
@@ -139,10 +139,10 @@ class Solution:
 
 
 class KMP:
-    shift = False
-    # shift = True
+    # shift = False
+    shift = True
     '''
-    这个可以找出所有匹配的字符，而不仅仅是第一个
+    这个可以找出所有匹配的字符, 而不仅仅是第一个
     '''
     def KMP_MATCHER(self, T, P):
         n = len(T)
@@ -156,21 +156,20 @@ class KMP:
         pi = self.COMPUTE_PREFIX_FUNCTION(P)
         print(f'pi = {pi}')
         '''
-        以下算法的本质是在patter[s:s+q]==T[s:s+i]成立时，patter[q]!=T[i]的情况下
-        尝试下一个s'>s时，利用已有的patter[s:s+q]==T[s:s+i]，跳过所有不可能匹配的s'
+        以下算法的本质是在patter[s:s+q]==T[s:s+i]成立时, patter[q]!=T[i]的情况下
+        尝试下一个s'>s时, 利用已有的patter[s:s+q]==T[s:s+i], 跳过所有不可能匹配的s'
         分别尝试pi[q]、pi[pi[q]]、pi[pi[pi[q]]]...
         另:
         pi^0(q) = pi[q]
         pi^1(q) = pi[pi[q]]
         pi^2(q) = pi[pi[pi[q]]]
         依次尝试pi^0(q)、pi^1(q)....直到pi^i(q)=0
-        根据算法导论32.4节，引理32.5:
-        pi^*(q) = {k: k<q 且P[0:k]是P[1:q]的后缀}
-        这里引理说明pi^*(q)列出了所有P[0:k]是P[1:q]后缀的k
-        根据算法导论32.4节，引理32.6:
+        根据算法导论32.4节, 引理32.5:
+        pi^*(q) = {k: k<q 且P[0:k]是P[0:q]的后缀}
+        这里引理说明pi^*(q)列出了所有P[0:k]是P[0:q]后缀的k
+        根据算法导论32.4节, 引理32.6、引理32.7:
         COMPUTE_PREFIX_FUNCTION可以正确的计算出pi(q)
         
-
         next数组不右移
                  0   1   2   3   4   5   6
         pattern: A   B   A   B   A   C   A
@@ -184,7 +183,17 @@ class KMP:
                  0   1   2   3   4   5   6   7
         pattern: A   B   A   B   A   C   A   
                  0   0   0   1   2   3   0   1
+
+        COMPUTE_PREFIX_FUNCTION 算法的正确性：
+        当P[k]!=T[q]时, 尝试所有的{k: k<q 且P[0:k]是P[0:q]的后缀}
+        根据算法导论32.4节, 引理32.5:
+        pi^*(q) = {k: k<q 且P[0:k]是P[0:q]的后缀}
+        所以迭代pi(q), 迭代pi(q)时只需要pi[0:q](不包括pi[q])的所有信息
+        尝试下一个k时,  在T[q]不变的情况下, P[k]可能等于T[q](注意是可能)
+        最后k=0时，相当于把P[k]和T[q]重头开始对比
+        上面把T换成P自身相似的原理求得next数组
         '''
+
         q = 0 # number of characters matched
         if self.shift:
             for i in range(0, n): # scan the text from left to right
@@ -214,7 +223,7 @@ class KMP:
         pi[0] = 0
         k = 0
         if self.shift:
-            for q in range(2, m):
+            for q in range(1, m):
                 while k > 0 and P[k] != P[q]:
                     k = pi[k]
                 if P[k] == P[q]:
@@ -223,7 +232,7 @@ class KMP:
         else:
             for q in range(1, m):
                 while k > 0 and P[k] != P[q]:
-                    k = pi[k]
+                    k = pi[k-1]
                 if P[k] == P[q]:
                     k = k + 1
                 pi[q] = k
