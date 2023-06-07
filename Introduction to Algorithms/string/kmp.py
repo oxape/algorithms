@@ -139,6 +139,8 @@ class Solution:
 
 
 class KMP:
+    shift = False
+    # shift = True
     '''
     这个可以找出所有匹配的字符，而不仅仅是第一个
     '''
@@ -162,35 +164,78 @@ class KMP:
         pi^1(q) = pi[pi[q]]
         pi^2(q) = pi[pi[pi[q]]]
         依次尝试pi^0(q)、pi^1(q)....直到pi^i(q)=0
+        根据算法导论32.4节，引理32.5:
+        pi^*(q) = {k: k<q 且P[0:k]是P[1:q]的后缀}
+        这里引理说明pi^*(q)列出了所有P[0:k]是P[1:q]后缀的k
+        根据算法导论32.4节，引理32.6:
+        COMPUTE_PREFIX_FUNCTION可以正确的计算出pi(q)
+        
+
+        next数组不右移
+                 0   1   2   3   4   5   6
+        pattern: A   B   A   B   A   C   A
+                 0   0   1   2   3   0   1
+
+                pi(4) = 3
+                pattern[0:4] = ABABA
+                ABABA
+                  ABABA
+        next数组右移
+                 0   1   2   3   4   5   6   7
+        pattern: A   B   A   B   A   C   A   
+                 0   0   0   1   2   3   0   1
         '''
         q = 0 # number of characters matched
-        for i in range(0, n): # scan the text from left to right
-            while q > 0 and P[q] != T[i]:
-                q = pi[q] # next character does not match
-            if P[q] == T[i]:
-                q = q + 1 # next character matches
-            if q == m: # is all of P matched?
-                q = pi[q-1] # look for the next match
-                print(f'Pattern occurs with shift {i - m + 1} next match position at {q}') # 打印出所有匹配的字符
+        if self.shift:
+            for i in range(0, n): # scan the text from left to right
+                while q > 0 and P[q] != T[i]:
+                    print(f'patter[{q}] != txt[{i}]')
+                    q = pi[q] # next character does not match
+                if P[q] == T[i]:
+                    q = q + 1 # next character matches
+                if q == m: # is all of P matched?
+                    q = pi[q] # look for the next match
+                    print(f'Pattern occurs with shift {i - m + 1} next match position at {q}') # 打印出所有匹配的字符
+        else:
+            for i in range(0, n): # scan the text from left to right
+                while q > 0 and P[q] != T[i]:
+                    q = pi[q-1] # next character does not match
+                if P[q] == T[i]:
+                    q = q + 1 # next character matches
+                if q == m: # is all of P matched?
+                    q = pi[q-1] # look for the next match
+                    print(f'Pattern occurs with shift {i - m + 1} next match position at {q}') # 打印出所有匹配的字符
     
     def COMPUTE_PREFIX_FUNCTION(self, P):
         m = len(P)
         pi = [0]*(m)
+        if self.shift:
+            pi.append(0)
         pi[0] = 0
         k = 0
-        for q in range(1, m):
-            while k > 0 and P[k] != P[q]:
-                k = pi[k]
-            if P[k] == P[q]:
-                k = k + 1
-            pi[q] = k
+        if self.shift:
+            for q in range(2, m):
+                while k > 0 and P[k] != P[q]:
+                    k = pi[k]
+                if P[k] == P[q]:
+                    k = k + 1
+                pi[q+1] = k
+        else:
+            for q in range(1, m):
+                while k > 0 and P[k] != P[q]:
+                    k = pi[k]
+                if P[k] == P[q]:
+                    k = k + 1
+                pi[q] = k
         return pi
 
 if __name__ == '__main__':
-    haystack = "BCBAABACAABABACAA"
-    needle = "ABABAC"
+    # haystack = "BCBAABACAABABACAA"
+    # needle = "ABABAC"
     # haystack = "AAAAAABCDE"
     # needle = "ABCDE"
+    haystack = "ABABABACAABABACA"
+    needle = "ABABACA"
     result = Solution().strStr(haystack,  needle)
     print(f'strStr = {result}')
     result = Solution().force_search(haystack,  needle)
@@ -198,6 +243,4 @@ if __name__ == '__main__':
     result = Solution().ptm_search(haystack, needle)
     print(f'ptm_search = {result}')
 
-    haystack = "BCBAABACAABABACAABABACA"
-    needle = "ABABACA"
     KMP().KMP_MATCHER(haystack, needle)
